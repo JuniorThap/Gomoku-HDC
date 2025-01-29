@@ -40,6 +40,7 @@ class MCTS:
             
         return node
 
+    # Expand a new node
     def expand(self, node):
         states = node.board.generate_states()
 
@@ -53,6 +54,7 @@ class MCTS:
 
                 return new_node
 
+    # Simulate the game until the end (for this example, Randomly pick the action)
     def rollout(self, board, my_turn):
         while board.check_gomoku() == 0:
             try:
