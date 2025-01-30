@@ -1,3 +1,4 @@
 .vscode
 MCTS-Gomoku
 tictactoe-mtcs
+__pycache__

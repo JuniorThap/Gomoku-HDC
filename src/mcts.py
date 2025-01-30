@@ -19,15 +19,13 @@ class MCTS:
         self.root = self.Node(parent=None, board=board)
         self.my_turn = -board.last_turn # last turn is opponent turn (-1 for black, 1 for white)
 
-        for _ in range(1000):
+        for i in range(1000):
             node = self.select(self.root)
+            print(f'{i}.N children', len(node.children))
             score = self.rollout(node.board, self.my_turn)
             self.backpropagation(node, score)
 
-        try:
-            return self.get_best_move(self.root, 0)
-        except:
-            pass
+        return self.get_best_move(self.root, 0)
 
     
     # Select most promising node
@@ -35,7 +33,9 @@ class MCTS:
         while not node.is_terminal:
             if node.is_fully_expanded:
                 node = self.get_best_move(node, 2)
+                print('best move')
             else:
+                print('expand')
                 return self.expand(node)
             
         return node
@@ -43,10 +43,11 @@ class MCTS:
     # Expand a new node
     def expand(self, node):
         states = node.board.generate_states()
+        print('N states', len(states))
 
         for state in states:
             action_name = str(state.last_action)
-            if action_name not in node.children:
+            if action_name not in node.children.keys():
                 new_node = self.Node(node, state)
 
                 node.children[action_name] = new_node
@@ -64,11 +65,17 @@ class MCTS:
                 return 0
         
         '''
-            | winner\my_turn | 1 (white) | -1 (black) |
-            +----------------+-----------+------------+
-            |   1 (white)    | 1*1 = 1   | 1*-1 = -1  | -> for example, my turn is black (-1), the winner is white (1) so I get the lose score (-1*1 = -1)
-            +----------------+-----------+------------+
-            |  -1 (black)    | -1*1 = -1 | -1*-1 = 1  |
+            Win State Table
+                +-----------------------------------------+
+                | winner\my_turn | 1 (white) | -1 (black) |
+                +----------------+-----------+------------+
+                |   1 (white)    | 1*1 = 1   | 1*-1 = -1  |
+                +----------------+-----------+------------+
+                |  -1 (black)    | -1*1 = -1 | -1*-1 = 1  |
+                +----------------+-----------+------------+
+            -> 1 is for white, -1 is for black
+            -> also 1 is for win score, -1 is for lose score
+            -> for example, my turn is black (-1), the winner is white (1) so I get the lose score (-1*1 = -1)
         '''
         return my_turn * board.winner
         

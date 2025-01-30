@@ -4,7 +4,7 @@ from gobanHD import GobanHD
 
 H = W = 13
 
-def board_ui(stdscr, board):
+def board_ui(stdscr, board, mcts):
     curses.curs_set(0)  # Hide the cursor
     stdscr.nodelay(1)   # Make getch non-blocking
     stdscr.timeout(100)  # Set timeout to allow periodic updates
@@ -57,12 +57,18 @@ def board_ui(stdscr, board):
         elif key == ord('\n'):  # Enter key to place a marker
             if board.board[current_row, current_col] == 0:
                 board.board[current_row, current_col] = 1  # Black stone (you can alternate)
+                output = mcts.search(board)
+                # board.board[row, col] = -1
                 # Update with MCTS or other logic to alternate turns if necessary.
 
-# Initialize the board and MCTS
-board = GobanHD(H=H, W=W, use_HD=False)
-mcts = MCTS()
+def main():
+    # Initialize the board and MCTS
+    board = GobanHD(H=H, W=W, use_HD=False)
+    mcts = MCTS()
 
-# Start the board and run the interactive UI
-board.start_board()
-curses.wrapper(board_ui, board)
+    # Start the board and run the interactive UI
+    board.start_board()
+    curses.wrapper(board_ui, board, mcts)
+
+if __name__ == '__main__':
+    main()

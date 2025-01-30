@@ -136,7 +136,7 @@ class GobanHD:
         return self
     
     def clone(self):
-        new_board = GomokuHDBoard(self.use_HD)
+        new_board = GobanHD(self.use_HD)
 
         new_board.device = self.device
         new_board.D = self.D
