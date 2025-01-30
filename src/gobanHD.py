@@ -5,7 +5,6 @@ class GobanHD:
         
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-        self.D = D
         self.W = W
         self.H = H
 
@@ -26,6 +25,7 @@ class GobanHD:
         # Create HD position
         self.use_HD = use_HD
         if use_HD:
+            self.D = D
             X = torchhd.level(W, D)
             Y = torchhd.level(H, D)
             encoded_pos = []
@@ -136,10 +136,9 @@ class GobanHD:
         return self
     
     def clone(self):
-        new_board = GobanHD(self.use_HD)
+        new_board = GobanHD(use_HD=self.use_HD)
 
         new_board.device = self.device
-        new_board.D = self.D
         new_board.W = self.W
         new_board.H = self.H
 
@@ -152,6 +151,7 @@ class GobanHD:
         new_board.winner = self.winner
 
         if self.use_HD:
+            new_board.D = self.D
             new_board.encoded_pos = self.encoded_pos.clone()
             new_board.empty_board = self.empty_board.clone()
             new_board.HDboard = self.HDboard.clone()

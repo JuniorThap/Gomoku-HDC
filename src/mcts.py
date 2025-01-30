@@ -10,22 +10,21 @@ class MCTS:
             self.visits = 0
             self.score = 0
             self.children = {}
-            self.is_terminal = board.check_gomoku()
+            self.is_terminal = board.check_gomoku() != 2 # 2 is on-going state 
             self.is_fully_expanded = self.is_terminal
     
 
     # Search for the best move in the current state
-    def search(self, board):
+    def search(self, board, n_simulation):
         self.root = self.Node(parent=None, board=board)
         self.my_turn = -board.last_turn # last turn is opponent turn (-1 for black, 1 for white)
 
-        for i in range(1000):
+        for _ in range(n_simulation):
             node = self.select(self.root)
-            print(f'{i}.N children', len(node.children))
             score = self.rollout(node.board, self.my_turn)
             self.backpropagation(node, score)
 
-        return self.get_best_move(self.root, 0)
+        return self.get_best_move(self.root, 0).board.last_action
 
     
     # Select most promising node
@@ -33,9 +32,7 @@ class MCTS:
         while not node.is_terminal:
             if node.is_fully_expanded:
                 node = self.get_best_move(node, 2)
-                print('best move')
             else:
-                print('expand')
                 return self.expand(node)
             
         return node
@@ -43,7 +40,6 @@ class MCTS:
     # Expand a new node
     def expand(self, node):
         states = node.board.generate_states()
-        print('N states', len(states))
 
         for state in states:
             action_name = str(state.last_action)
@@ -57,7 +53,7 @@ class MCTS:
 
     # Simulate the game until the end (for this example, Randomly pick the action)
     def rollout(self, board, my_turn):
-        while board.check_gomoku() == 0:
+        while board.check_gomoku() == 2:
             try:
                 board = random.choice(board.generate_states())
             except:
@@ -90,7 +86,7 @@ class MCTS:
         best_moves = []
 
         for child_node in node.children.values():
-            score = self.UCB1(child_node.board, exploration_constant)
+            score = self.UCB1(child_node, exploration_constant)
 
             if score > best_score:
                 best_score = score

@@ -1,4 +1,3 @@
 .vscode
-MCTS-Gomoku
-tictactoe-mtcs
 __pycache__
+*.egg-info
